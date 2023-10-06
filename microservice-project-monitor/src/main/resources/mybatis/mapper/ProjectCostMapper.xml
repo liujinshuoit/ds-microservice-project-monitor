@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.ProjectCostMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectCostDTO" id="ProjectCostMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="planCost" column="plan_cost" jdbcType="INTEGER"/>
+        <result property="occurredCost" column="occurred_cost" jdbcType="INTEGER"/>
+        <result property="projectCode" column="project_code" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <insert id = "insert" parameterType ="com.das.consultation.entities.dto.ProjectCostDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO project_cost (
+                id,
+                plan_cost,
+                occurred_cost,
+                project_code,
+                version,
+                state,
+                update_time
+            )
+          VALUES
+            (
+                #{id},
+                #{planCost},
+                #{occurredCost},
+                #{projectCode},
+                #{version},
+                #{state},
+                #{updateTime}
+        )
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          project_cost
+        SET
+          state = 0
+        WHERE
+          project_code = #{projectCode} AND state = 1
+    </update>
+
+    <update id = "updateByCode" parameterType ="com.das.consultation.entities.dto.ProjectCostDTO">
+        UPDATE
+            project_cost
+        SET
+            plan_cost = #{planCost},
+            occurred_cost = #{occurredCost},
+            version = #{version},
+            update_time = #{updateTime}
+        WHERE
+            project_code = #{projectCode} AND state = 1
+    </update>
+
+
+</mapper>

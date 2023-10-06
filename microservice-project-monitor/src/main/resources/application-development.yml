@@ -1,0 +1,94 @@
+server:
+  port: 6666
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      jkda: # 健康档案
+        driverClassName: oracle.jdbc.OracleDriver
+        url: jdbc:oracle:thin:@192.168.5.65:1521/hn
+        username: jkda
+        password: juyaPassw0d
+      dzbl: # 电子病例
+        driverClassName: oracle.jdbc.OracleDriver
+        url: jdbc:oracle:thin:@192.168.5.65:1521/hn
+        username: dzbl
+        password: juyaPassw0d
+      test: # 标准管理系统
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://47.97.158.158:3306/dbtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: 123456
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  jpa:
+    hibernate:
+      ddl-auto: update # 自动建表策略
+    show-sql: true # 是否打印SQL
+    properties:
+      hibernate:
+#        format_sql: true # 是否格式化SQL
+
+#logging:
+#  level:
+#    org.hibernate.type.descriptor.sql.BasicBinder: trace # 打印SQL参数
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl #关闭日志打印
+  mapper-locations: classpath*:mybatis/mapper/**/*.xml
+  global-config:
+    # 逻辑删除配置
+    db-config:
+      # 删除前
+      logic-not-delete-value: 1
+      # 删除后
+      logic-delete-value: 0
+  type-aliases-package: com.das.consultation.mapper
+
+#定时任务
+schedule:
+  data:
+    push:
+      fertileWomanCorn: 0 */1 * * * ?
+
+#三方系统
+tripartite-system:
+  fuyou:
+    url: http://hn.cnhealth.cn:88/DataExchanges/WISHandler.ashx
+    authtoken: 46E9405B17B04371A4F320E41F357F4E-TEST
+    key: EEC8C913
+
+#日志记录
+logging:
+    config: classpath:logback.xml
+    level:
+        com:
+          das:
+            consultation:
+              mapper: trace

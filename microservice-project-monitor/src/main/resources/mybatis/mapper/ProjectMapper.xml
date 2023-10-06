@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.ProjectMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectDTO" id="ProjectMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="projectCode" column="project_code" jdbcType="VARCHAR"/>
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectPersonOverviewDTO" id="ProjectPersonOverviewMap">
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="personNumber" column="person_number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectOverviewDetailDTO" id="ProjectOverviewDetailMap">
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="planCost" column="plan_cost" jdbcType="INTEGER"/>
+        <result property="occurredCost" column="occurred_cost" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id = "insert" parameterType ="com.das.consultation.entities.dto.ProjectDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO project (
+                id,
+                project_code,
+                project_name,
+                sort,
+                version,
+                state,
+                update_time
+            )
+          VALUES
+            (
+                #{id},
+                #{projectCode},
+                #{projectName},
+                #{sort},
+                #{version},
+                #{state},
+                #{updateTime}
+        )
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          project
+        SET
+          state = 0
+        WHERE
+          project_code = #{projectCode} AND state = 1
+    </update>
+
+    <select id = "selectOne" resultMap="ProjectMap">
+        SELECT
+            id,
+            project_code,
+            project_name,
+            version,
+            state,
+            update_time
+        FROM
+          project
+        WHERE
+          project_code = #{projectCode}
+        AND
+          state = 1
+    </select>
+
+    <select id = "getProjectPersonOverviewList" resultMap="ProjectPersonOverviewMap">
+        SELECT
+          p.project_name,
+          p.sort,
+          count(*) person_number
+        FROM
+          project p
+        INNER JOIN
+          person pn
+        ON p.project_code = pn.current_project_code AND p.state = 1 AND pn.state = 1
+        GROUP BY
+          p.project_name,
+          p.sort
+        ORDER BY
+          p.sort
+    </select>
+
+    <select id = "getProjectOverviewDetailList" resultMap="ProjectOverviewDetailMap">
+        SELECT
+          project_name,
+          plan_cost,
+          occurred_cost
+        FROM
+          project p
+        INNER JOIN
+          project_cost pc
+        ON
+          p.project_code = pc.project_code AND p.state = 1 AND pc.state = 1
+    </select>
+
+
+</mapper>

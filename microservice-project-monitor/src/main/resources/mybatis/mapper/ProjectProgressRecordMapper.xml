@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.ProjectProgressRecordMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectProgressRecordDTO" id="ProjectProgressRecordMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="nodeName" column="node_name" jdbcType="VARCHAR"/>
+        <result property="planDate" column="plan_date" jdbcType="DATE"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+        <result property="projectCode" column="project_code" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectProgressOverviewDTO" id="ProjectProgressOverviewMap">
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="nodeName" column="node_name" jdbcType="VARCHAR"/>
+        <result property="planDate" column="plan_date" jdbcType="DATE"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <insert id = "insertList" parameterType ="com.das.consultation.entities.dto.ProjectProgressRecordDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO project_progress_record (
+                id,
+                node_name,
+                plan_date,
+                status,
+                info,
+                project_code,
+                state,
+                update_time
+            )
+          VALUES
+          <foreach collection ="projectProgressRecordDTOList" item="item" index= "index" separator =",">
+            (
+                #{item.id},
+                #{item.nodeName},
+                #{item.planDate},
+                #{item.status},
+                #{item.info},
+                #{item.projectCode},
+                #{item.state},
+                #{item.updateTime}
+            )
+          </foreach >
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          project_progress_record
+        SET
+          state = 0
+        WHERE
+          project_code = #{projectCode} AND state = 1
+    </update>
+
+    <select id = "getProjectProgressOverviewList" resultMap="ProjectProgressOverviewMap">
+        SELECT
+          p.project_name,
+          ppr.node_name,
+          ppr.plan_date,
+          ppr.status,
+          ppr.info
+        FROM
+          project p
+        INNER JOIN
+          project_progress_record ppr
+        ON p.project_code = ppr.project_code AND p.state = 1 AND ppr.state = 1
+    </select>
+
+</mapper>

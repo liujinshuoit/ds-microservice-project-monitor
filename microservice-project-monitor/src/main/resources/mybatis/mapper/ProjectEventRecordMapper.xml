@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.ProjectEventRecordMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectEventRecordDTO" id="ProjectEventRecordMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="eventName" column="event_name" jdbcType="VARCHAR"/>
+        <result property="eventDate" column="event_date" jdbcType="DATE"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="projectCode" column="project_code" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectEventOverviewDTO" id="ProjectEventOverviewMap">
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="eventName" column="event_name" jdbcType="VARCHAR"/>
+        <result property="eventDate" column="event_date" jdbcType="DATE"/>
+    </resultMap>
+
+    <insert id = "insertList" parameterType ="com.das.consultation.entities.dto.ProjectEventRecordDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO project_event_record (
+                id,
+                event_name,
+                event_date,
+                type,
+                project_code,
+                state,
+                update_time
+            )
+          VALUES
+          <foreach collection ="projectEventRecordDTOList" item="item" index= "index" separator =",">
+            (
+                #{item.id},
+                #{item.eventName},
+                #{item.eventDate},
+                #{item.type},
+                #{item.projectCode},
+                #{item.state},
+                #{item.updateTime}
+            )
+          </foreach >
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          project_event_record
+        SET
+          state = 0
+        WHERE
+          project_code = #{projectCode} AND state = 1
+    </update>
+
+    <select id = "getProjectEventOverviewList" resultMap="ProjectEventOverviewMap">
+        SELECT
+          p.project_name,
+          pe.event_name,
+          pe.event_date
+        FROM
+          project p
+        INNER JOIN
+          project_event_record pe
+        ON p.project_code = pe.project_code AND p.state = 1 AND pe.state = 1
+        WHERE
+         pe.type = #{type}
+        <if test="1 == type">
+            ORDER BY pe.event_date
+        </if>
+        <if test="2 == type">
+            ORDER BY pe.event_date DESC
+        </if>
+    </select>
+
+</mapper>

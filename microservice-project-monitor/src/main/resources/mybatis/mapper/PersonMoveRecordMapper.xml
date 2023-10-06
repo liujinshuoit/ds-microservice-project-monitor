@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.PersonMoveRecordMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.PersonMoveRecordDTO" id="PersonMoveRecordMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="personCode" column="person_code" jdbcType="VARCHAR"/>
+        <result property="personName" column="person_name" jdbcType="VARCHAR"/>
+        <result property="position" column="position" jdbcType="INTEGER"/>
+        <result property="baseProjectCode" column="base_project_code" jdbcType="VARCHAR"/>
+        <result property="baseProjectName" column="base_project_name" jdbcType="VARCHAR"/>
+        <result property="supportProjectCode" column="support_project_code" jdbcType="VARCHAR"/>
+        <result property="supportProjectName" column="support_project_name" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="DATE"/>
+        <result property="endDate" column="end_date" jdbcType="DATE"/>
+        <result property="supportInfo" column="support_info" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap type="com.das.consultation.entities.dto.ProjectPersonMoveOverviewDTO" id="ProjectPersonMoveOverviewMap">
+        <result property="projectName" column="project_name" jdbcType="VARCHAR"/>
+        <result property="personName" column="person_name" jdbcType="VARCHAR"/>
+        <result property="supportProjectName" column="support_project_name" jdbcType="VARCHAR"/>
+        <result property="startDate" column="start_date" jdbcType="DATE"/>
+        <result property="endDate" column="end_date" jdbcType="DATE"/>
+        <result property="supportInfo" column="support_info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <insert id = "insertList" parameterType ="com.das.consultation.entities.dto.PersonMoveRecordDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO person_move_record (
+                id,
+                person_code,
+                person_name,
+                position,
+                base_project_code,
+                base_project_name,
+                support_project_code,
+                support_project_name,
+                start_date,
+                end_date,
+                support_info,
+                state,
+                update_time
+            )
+          VALUES
+          <foreach collection ="personMoveRecordDTOList" item="item" index= "index" separator =",">
+            (
+                #{item.id},
+                #{item.personCode},
+                #{item.personName},
+                #{item.position},
+                #{item.baseProjectCode},
+                #{item.baseProjectName},
+                #{item.supportProjectCode},
+                #{item.supportProjectName},
+                #{item.startDate},
+                #{item.endDate},
+                #{item.supportInfo},
+                #{item.state},
+                #{item.updateTime}
+            )
+          </foreach >
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          person_move_record
+        SET
+          state = 0
+        WHERE
+          base_project_code = #{projectCode} AND state = 1
+    </update>
+
+    <select id = "getProjectPersonMoveOverviewList" resultMap="ProjectPersonMoveOverviewMap">
+        SELECT
+          p.base_project_name project_name,
+          p.person_name,
+          p.support_project_name,
+          p.start_date,
+          p.end_date,
+          p.support_info
+        FROM
+          person_move_record p
+        WHERE
+          p.state = 1
+    </select>
+
+</mapper>

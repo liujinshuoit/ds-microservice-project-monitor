@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <script type="text/javascript" th:src="@{/js/jquery-1.8.3.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/ajaxfileupload.js}"></script>
+        <title>监管系统</title>
+        <style>
+            .app-wrapper {
+                position: relative;
+                height: 100%;
+                width: 100%;
+            }
+            container, #app .withoutAnimation .sidebar-container {
+                transition: none;
+            }
+            #app .hideSidebar .sidebar-container {
+                width: 36px!important;
+            }
+            #app .sidebar-container {
+                transition: width .28s;
+                width: 180px!important;
+                height: 100%;
+                position: fixed;
+                font-size: 0;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 1001;
+                overflow: hidden;
+            }
+            .el-scrollbar {
+                overflow: hidden;
+                position: relative;
+            }
+            container, #app .withoutAnimation .sidebar-container {
+                transition: none;
+            }
+            #app .hideSidebar .main-container {
+                margin-left: 36px;
+            }
+            #app .main-container {
+                min-height: 100%;
+                transition: margin-left .28s;
+                margin-left: 180px;
+            }
+            #app .sidebar-container .scrollbar-wrapper {
+                height: calc(100% + 15px);
+            }
+            .el-scrollbar__wrap {
+                overflow: scroll;
+                height: 100%;
+            }
+            #app .sidebar-container .is-horizontal {
+                display: none;
+            }
+            .el-scrollbar__bar.is-horizontal {
+                height: 6px;
+                left: 2px;
+            }
+            .el-scrollbar__bar {
+                position: absolute;
+                right: 2px;
+                bottom: 2px;
+                z-index: 1;
+                border-radius: 4px;
+                opacity: 0;
+                transition: opacity .12s ease-out;
+            }
+            .el-scrollbar__bar.is-vertical {
+                width: 6px;
+                top: 2px;
+            }
+            .el-scrollbar__bar {
+                position: absolute;
+                right: 2px;
+                bottom: 2px;
+                z-index: 1;
+                border-radius: 4px;
+                opacity: 0;
+                transition: opacity .12s ease-out;
+            }
+            .navbar {
+                height: 50px;
+                line-height: 50px;
+                border-radius: 0!important;
+                box-shadow: 1px 1px 5px 0 rgb(0 0 0 / 10%);
+            }
+            .el-menu--horizontal {
+                border-right: none;
+                border-bottom: 1px solid #e6e6e6;
+            }
+            .el-menu {
+                border-right: 1px solid #e6e6e6;
+                list-style: none;
+                position: relative;
+                margin: 0;
+                padding-left: 0;
+            }
+            .el-dropdown-menu__item--divided:before, .el-menu, .el-menu--horizontal>.el-menu-item:not(.is-disabled):focus, .el-menu--horizontal>.el-menu-item:not(.is-disabled):hover, .el-menu--horizontal>.el-submenu .el-submenu__title:hover {
+                background-color: #fff;
+            }
+            .navbar .hamburger-container {
+                line-height: 58px;
+                height: 50px;
+                float: left;
+                padding: 0 10px;
+            }
+            .hamburger {
+                display: inline-block;
+                cursor: pointer;
+                width: 20px;
+                height: 20px;
+                transform: rotate(90deg);
+                transition: .38s;
+                transform-origin: 50% 50%;
+            }
+            svg:not(:root) {
+                overflow: hidden;
+            }
+            .app-breadcrumb.el-breadcrumb {
+                display: inline-block;
+                font-size: 14px;
+                line-height: 50px;
+                margin-left: 10px;
+            }
+            .el-breadcrumb {
+                font-size: 14px;
+                line-height: 1;
+            }
+            .el-breadcrumb__item {
+                float: left;
+            }
+            .el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover {
+                font-weight: 400;
+                color: #606266;
+                cursor: text;
+            }
+            .el-breadcrumb__inner {
+                color: #606266;
+            }
+            .el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover {
+                font-weight: 400;
+                color: #606266;
+                cursor: text;
+            }
+            .el-breadcrumb__inner.is-link, .el-breadcrumb__inner a {
+                font-weight: 700;
+                text-decoration: none;
+                transition: color .2s cubic-bezier(.645,.045,.355,1);
+                color: #303133;
+            }
+            a, a:focus, a:hover {
+                cursor: pointer;
+                color: inherit;
+                text-decoration: none;
+            }
+            a, a:active, a:focus, a:hover, div:focus {
+                outline: none;
+            }
+            a {
+                background-color: transparent;
+                -webkit-text-decoration-skip: objects;
+            }
+            .navbar .avatar-container {
+                height: 50px;
+                display: inline-block;
+                position: absolute;
+                right: 35px;
+            }
+            .el-dropdown {
+                display: inline-block;
+                position: relative;
+                color: #606266;
+                font-size: 14px;
+            }
+            .el-scrollbar__bar.is-vertical>div {
+                width: 100%;
+            }
+            .el-scrollbar__thumb {
+                position: relative;
+                display: block;
+                width: 0;
+                height: 0;
+                cursor: pointer;
+                border-radius: inherit;
+                background-color: hsla(220,4%,58%,.3);
+                transition: background-color .3s;
+            }
+            .dashboard-container {
+                margin: 30px;
+            }
+            .dashboard-text {
+                font-size: 24px;
+                line-height: 46px;
+                padding-bottom: 10px;
+            }
+            element.style {
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+            .el-row {
+                box-sizing: border-box;
+            }
+
+
+
+            .app-container {
+                padding: 20px;
+            }
+            .el-form-item {
+                margin-bottom: 22px;
+            }
+            .el-form-item__label {
+                text-align: right;
+                float: left;
+                font-size: 14px;
+                color: #606266;
+                line-height: 40px;
+                padding: 0 12px 0 0;
+                box-sizing: border-box;
+            }
+            .el-form-item__content .el-input-group, .el-form-item__label, .el-tag .el-icon-close {
+                vertical-align: middle;
+            }
+            label {
+                font-weight: 700;
+            }
+            .el-form-item__content {
+                line-height: 40px;
+                position: relative;
+                font-size: 14px;
+            }
+            .el-input {
+                position: relative;
+                font-size: 14px;
+                display: inline-block;
+                width: 100%;
+            }
+            .el-input__inner {
+                -webkit-appearance: none;
+                background-color: #fff;
+                background-image: none;
+                border-radius: 4px;
+                border: 1px solid #dcdfe6;
+                box-sizing: border-box;
+                color: #606266;
+                display: inline-block;
+                font-size: inherit;
+                height: 40px;
+                line-height: 40px;
+                outline: 0;
+                padding: 0 15px;
+                transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+                width: 100%;
+            }
+
+            .el-input__inner_str {
+                -webkit-appearance: none;
+                background-color: #fff;
+                background-image: none;
+                border-radius: 4px;
+                border: 0px solid #dcdfe6;
+                box-sizing: border-box;
+                color: #606266;
+                display: inline-block;
+                font-size: inherit;
+                height: 40px;
+                line-height: 40px;
+                outline: 0;
+                padding: 0 15px;
+                transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+                width: 100%;
+            }
+
+            [type=reset], [type=submit], button, html [type=button] {
+                -webkit-appearance: button;
+            }
+            .el-button--add {
+                color: #fff;
+                background-color: #e6a23c;
+                border-color: #e6a23c;
+
+                padding: 12px 20px;
+            }
+            .el-button--delete {
+                color: #fff;
+                background-color: #FFC7CE;
+                border-color: #FFC7CE;
+
+                padding: 12px 20px;
+            }
+            .el-button--primary {
+                color: #fff;
+                background-color: #c0c4cc;
+                border-color: #c0c4cc;
+
+                margin-left: 35%;
+                padding: 12px 20px;
+                width: 30%;
+                height: 100%;
+            }
+            .el-button--default {
+                color: #000;
+                background-color: #fff;
+                border-color: #fff;
+
+                padding: 12px 20px;
+                margin-left: 2%;
+            }
+            .el-button, .el-checkbox {
+                -ms-user-select: none;
+                font-weight: 500;
+            }
+            .el-button, .el-checkbox, .el-slider__button, .el-step__icon-inner {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+            }
+            button, select {
+                text-transform: none;
+            }
+            button, input {
+                overflow: visible;
+            }
+            button, input, optgroup, select, textarea {
+                font-family: sans-serif;
+                font-size: 100%;
+                line-height: 1.15;
+                margin: 0;
+            }
+        </style>
+
+        <script language="JavaScript">
+            $(function () {
+                $("#page").on("change","#file",function(){
+                    proveState();
+                });
+
+
+                // 撤回
+//                $("#delete").click(function(){
+//                    var str = $("#truckNoStr").val();
+//                    if (isEmpty(str)) {
+//
+//                    } else {
+//                        var delStr = "";
+//                        var strList = str.split(",");
+//                        for (var i=0; i<strList.length; i++) {
+//                            if (1 == strList.length) {
+//                                delStr = "";
+//                            } else if (2 == strList.length) {
+//                                delStr = strList[0];
+//                            } else {
+//                                if (i != strList.length - 1) {
+//                                    if (i == strList.length -2) {
+//                                        delStr += strList[i];
+//                                    } else {
+//                                        delStr += strList[i] + ",";
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        $("#truckNoStr").val(delStr);
+//                    }
+//                    proveState();
+//                })
+
+                /** 日期事件 **/
+//                $("#date").blur(function(){
+//                    $("#dateStr").val($("#date").val());
+//                    proveState();
+//                })
+//                $("#date").change(function(){
+//                    $("#dateStr").val($("#date").val());
+//                    proveState();
+//                })
+
+                /**  上传 **/
+                $("#upload").click(function(){
+                    $.ajaxFileUpload({
+                        url: '/project//excel/upload',
+                        // url: commonObj.getContextPath()+'/importPlatFormPersonInfo',
+                        type: "post",
+                        secureuri: false, //一般设置为false
+                        fileElementId: 'file', //文件上传空间的id属性  <input type="file" id="file1" name="file" />
+                        dataType: 'application/json', //返回值类型 一般设置为json
+                        success: function (data)  //服务器成功响应处理函数
+                        {
+                            var jsonData = eval('(' + data + ')');
+                            if (0 == jsonData.head.result) {
+                                alert("上传成功");
+                            } else {
+                                alert(jsonData.head.desc);
+                            }
+
+                            //ajaxfileupload 不解析json 转换成对象
+//                            data = $.parseJSON(data.replace(/<.*?>/ig,""));
+//                            var result = parseInt(data.responseHeader.errorCode);
+//                            if(result==0){
+//                                // message = data.responseHeader;
+//                                message = data;
+//                            }
+//                            if(result!=0){
+//                                message = data.responseHeader;
+//                                location.reload();
+//                                top.stopProcess(message);
+//                            }
+                        },
+                        error: function (data, xml,status, e)//服务器响应失败处理函数
+                        {
+//                            alert(e);
+                            alert("上传失败");
+                        }
+                    });
+                })
+
+                /**  重置 **/
+                $("#reset").click(function(){
+                    $("#companyName").val("");
+                    $("#truckNo").val("");
+                    $("#companyNameStr").val("");
+                    $("#truckNoStr").val("");
+                    $("#dateStr").val("");
+                    proveState();
+                })
+
+                /** 校验 **/
+                function proveState () {
+//                    var truckNoStr = $("#truckNoStr").val();
+//                    var companyNameStr = $("#companyNameStr").val();
+//                    var dateStr = $("#dateStr").val();
+                    if ($("#file").val() && "xlsx" == $("#file").val().match(/^(.*)(\.)(.{1,8})$/)[3]) {
+                        $("#upload").attr("disabled", false);
+                        $("#upload").css("background-color", "#409eff")
+                        $("#upload").css("border-color", "#409eff")
+                    } else {
+                        $("#upload").attr("disabled", "disabled");
+                        $("#upload").css("background-color", "#c0c4cc")
+                        $("#upload").css("border-color", "#c0c4cc")
+                    }
+                }
+
+                // 是否为空
+                function isEmpty (obj) {
+                    return null == obj || undefined == obj || "" == obj || 0 == obj.length;
+                }
+            })
+        </script>
+    </head>
+    <body>
+        <div id="page">
+            <div class="app-wrapper hideSidebar withoutAnimation">
+                <!--竖菜单-->
+                <!--<div class="sidebar-container el-scrollbar">
+                    <div class="scrollbar-wrapper el-scrollbar__wrap" style="margin-bottom: -17px; margin-right: -17px;">
+
+                    </div>
+                    <div class="el-scrollbar__bar is-horizontal">
+
+                    </div>
+                    <div class="el-scrollbar__bar is-vertical">
+                        <div class="el-scrollbar__thumb" style="transform: translateY(0%);"></div>
+                    </div>
+                </div>-->
+                <!--首页内容-->
+                <div class="main-container">
+                    <!--横模块-->
+                    <!--<ul class="navbar el-menu&#45;&#45;horizontal el-menu">
+                        <div class="hamburger-container">
+
+                        </div>
+                        <div class="el-breadcrumb app-breadcrumb">
+                            <span>
+                                <span class="el-breadcrumb__item">
+                                    <span class="el-breadcrumb__inner">
+                                        <a class="router-link-exact-active router-link-active">首页</a>
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="avatar-container el-dropdown">
+                            <span>
+                                <span class="el-breadcrumb__item">
+                                    <span class="el-breadcrumb__inner">
+                                        <a class="router-link-exact-active router-link-active" th:href="@{/logout}" style="cursor: pointer">退出</a>
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                    </ul>-->
+                    <!--主体内容-->
+                    <div class="dashboard-container">
+                        <div class="dashboard-text" style="text-align: center;">项目监控信息填报</div>
+                        <div class="app-container">
+                            <form class="el-form" th:action="@{/prove}"  method="post">
+                                <!--<div class="el-form-item is-required">
+                                    <label class="el-form-item__label" style="width: 120px">单位：</label>
+                                    <div class="el-form-item__content" style="margin-left: 120px;">
+                                        <div class="el-input">
+                                            <input id="companyName" name="companyName" class="el-input__inner"  type="text" autocomplete="on" placeholder="请输入单位名称" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="el-form-item is-required">
+                                    <label class="el-form-item__label" style="width: 120px">车号：</label>
+                                    <div class="el-form-item__content" style="margin-left: 120px;">
+                                        <div class="el-input">
+                                            <input id="truckNo" name="truckNo" type="text" class="el-input__inner" style="width: 230px" autocomplete="on" placeholder="请输入车号" />
+                                            <button id="add" type="button" class="el-button el-button&#45;&#45;add">
+                                                <span>添加车号</span>
+                                            </button>
+                                            <button id="delete" type="button" class="el-button el-button&#45;&#45;delete">
+                                                <span>撤回上一车号</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>-->
+                                <div class="el-form-item is-required">
+                                    <label class="el-form-item__label" style="width: 120px">Excel模板：</label>
+                                    <div class="el-form-item__content" style="margin-left: 120px;">
+                                        <div class="el-input">
+                                            <input id="file" name="file" class="el-input__inner" type="file" autocomplete="on" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<div class="el-form-item is-required">-->
+                                    <!--<label class="el-form-item__label" style="width: 120px; color: #00CD66">输出效果：</label>-->
+                                    <!--<div class="el-form-item__content" style="margin-left: 120px;">-->
+                                        <!--<div class="el-input">-->
+                                            <!--<div>-->
+                                                <!--<input id="companyNameStr" name="companyNameStr" class="el-input__inner_str" type="text" readonly="readonly" />-->
+                                            <!--</div>-->
+                                            <!--<div>-->
+                                                <!--<input id="truckNoStr" name="truckNoStr" class="el-input__inner_str" type="text"  readonly="readonly" />-->
+                                            <!--</div>-->
+                                            <!--<div>-->
+                                                <!--<input id="dateStr" name="dateStr" class="el-input__inner_str" type="text"  readonly="readonly" />-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <div class="el-form-item">
+                                    <div class="el-form-item__content">
+                                        <button id="upload" class="el-button el-button--primary" type="button" disabled>
+                                            <span>上传</span>
+                                        </button>
+                                        <button id="reset" class="el-button el-button--default" type="button">
+                                            <span>重置</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <!--/*@thymesVar id="error" type=""*/-->
+                                    <span></span>
+                                    <span style="text-align: center; font-size: 12px;color: red" th:text="${error}"></span>
+                                    <br />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

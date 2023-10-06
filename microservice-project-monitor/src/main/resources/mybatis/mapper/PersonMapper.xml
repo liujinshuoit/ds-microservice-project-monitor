@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.das.consultation.mapper.PersonMapper">
+
+    <resultMap type="com.das.consultation.entities.dto.PersonDTO" id="PersonMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="personCode" column="person_code" jdbcType="VARCHAR"/>
+        <result property="personName" column="person_name" jdbcType="VARCHAR"/>
+        <result property="position" column="position" jdbcType="INTEGER"/>
+        <result property="baseProjectCode" column="base_project_code" jdbcType="VARCHAR"/>
+        <result property="currentProjectCode" column="current_project_code" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <insert id = "insertList" parameterType ="com.das.consultation.entities.dto.PersonDTO">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+          INSERT INTO Person (
+                id,
+                person_code,
+                person_name,
+                position,
+                base_project_code,
+                current_project_code,
+                version,
+                state,
+                update_time
+            )
+          VALUES
+          <foreach collection ="personDTOList" item="item" index= "index" separator =",">
+            (
+                #{item.id},
+                #{item.personCode},
+                #{item.personName},
+                #{item.position},
+                #{item.baseProjectCode},
+                #{item.currentProjectCode},
+                #{item.version},
+                #{item.state},
+                #{item.updateTime}
+            )
+          </foreach >
+    </insert>
+
+    <update id = "delete">
+        UPDATE
+          Person
+        SET
+          state = 0
+        WHERE
+          current_project_code = #{projectCode} AND state = 1
+    </update>
+
+</mapper>
